@@ -11,6 +11,8 @@ mysterycode-skill/
 ├── skill.json                          # 技能元数据配置
 ├── prompt.md                           # 分析提示词和质量标准
 ├── examples.md                         # 详细使用示例
+├── scripts/                            # 辅助脚本
+│   └── extract_epub.py                 # EPUB 正文提取脚本
 └── templates/                          # Obsidian 模板文件
     ├── chapter-analysis-template.md    # 章节分析模板
     ├── character-card-template.md      # 角色卡片模板
@@ -21,6 +23,7 @@ mysterycode-skill/
 
 ### 1. 文本分析
 - 支持多种格式 (Markdown, TXT, PDF, EPUB)
+- EPUB 通过提取脚本先转换为可分析正文
 - 自动章节识别和分段
 - 结构化分析 (细节、异常、伏笔、洞察)
 

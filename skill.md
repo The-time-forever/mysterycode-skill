@@ -6,6 +6,7 @@ A specialized skill for analyzing mystery novels and detective stories using str
 
 ### Text Import and Processing
 - Import mystery text from multiple formats (markdown, plain text, PDF, EPUB)
+- Extract readable chapter text from EPUB files with `scripts/extract_epub.py` before analysis
 - Parse and segment text into chapters
 - Handle multi-language content (English, Chinese, etc.)
 - Preserve full chapter text for detailed analysis
@@ -65,13 +66,21 @@ The tool amplifies close reading rather than replacing it. It should:
 
 ```
 1. Import source text
-2. Review chapter structure
-3. Select investigation scope (single chapter or range)
-4. Run structured analysis
-5. Check for consistency issues
-6. Inspect relation graphs
-7. Export findings to notes
+2. If the source is EPUB, run `python scripts/extract_epub.py <book>.epub --output extracted.json`
+3. Review extracted chapter structure and previews
+4. Select investigation scope (single chapter or range)
+5. Run structured analysis on extracted text only
+6. Check for consistency issues
+7. Inspect relation graphs
+8. Export findings to notes
 ```
+
+## EPUB Workflow Guardrail
+
+- Never claim to have read an EPUB directly unless chapter text has been extracted first.
+- For `.epub` inputs, use `scripts/extract_epub.py` and inspect the extracted chapter previews before analysis.
+- If extraction fails or produces no readable chapters, stop and report that the source text is unavailable.
+- Do not infer plot content from the file name, title, metadata, or prior knowledge.
 
 ## Output Structure
 
@@ -150,7 +159,7 @@ The tool amplifies close reading rather than replacing it. It should:
 - Markdown (.md)
 - Plain text (.txt)
 - PDF (.pdf)
-- EPUB (.epub)
+- EPUB (.epub) via `scripts/extract_epub.py`
 
 ### Chapter Segmentation
 - Automatic chapter detection
@@ -168,7 +177,7 @@ The tool amplifies close reading rather than replacing it. It should:
 
 ### Current Constraints
 - Chapter truncation may occur for very long chapters
-- EPUB segmentation may include front matter as chapters
+- EPUB front matter filtering is heuristic and may need manual review
 - Graph generation can produce duplicate node names
 - Analysis may drift without strong grounding prompts
 

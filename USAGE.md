@@ -24,6 +24,16 @@ claude list-skills
 
 ## 基本使用
 
+### 先处理 EPUB
+
+如果源文件是 `.epub`，先运行：
+
+```bash
+python scripts/extract_epub.py <文件>.epub --output extracted.json
+```
+
+然后基于 `extracted.json` 中的章节文本做分析。不要在没有提取出正文时直接分析书名或文件本身。
+
 ### 分析单个章节
 
 ```
@@ -251,6 +261,13 @@ Claude 会:
 - "analyze detective story" / "分析侦探故事"
 - "track clues" / "追踪线索"
 - "mystery novel" / "推理小说"
+
+### EPUB 分析跑偏
+
+如果 AI 看起来在根据常识作答而不是根据正文作答，检查:
+- 是否先运行了 `scripts/extract_epub.py`
+- 提取结果里是否真的有章节文本和预览
+- 是否把 `extracted.json` 或提取出的正文提供给了分析步骤
 
 ### Vault 创建失败
 

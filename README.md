@@ -107,7 +107,7 @@ The skill activates when users mention:
 - "mystery novel"
 
 Or when working with mystery-related files:
-- `.epub` files with mystery content
+- `.epub` files with mystery content that should be extracted first
 - Text files containing detective stories
 - PDF mystery novels
 
@@ -163,7 +163,7 @@ Analysis follows a consistent format:
 
 1. **Import**: Load mystery text from file
    ```
-   "Import the mystery novel from mystery.epub"
+   "Extract chapter text from mystery.epub, then show me the chapter structure"
    ```
 
 2. **Review Structure**: Check chapter segmentation
@@ -203,7 +203,13 @@ Analysis follows a consistent format:
 - **Markdown** (`.md`): Plain text with markdown formatting
 - **Text** (`.txt`): Plain text files
 - **PDF** (`.pdf`): PDF documents
-- **EPUB** (`.epub`): Electronic publication format
+- **EPUB** (`.epub`): Use `python scripts/extract_epub.py <book>.epub --output extracted.json` before analysis
+
+### EPUB Guardrail
+
+- Do not treat a raw `.epub` file as already-read chapter text.
+- Extract readable chapters first, then analyze only the extracted text.
+- If extraction returns no readable chapters, stop and report the failure instead of answering from memory.
 
 ### Model Support
 
@@ -263,7 +269,7 @@ This ensures model output exposes evidence before offering interpretations.
 ### Current Constraints
 
 - Very long chapters may be truncated
-- EPUB segmentation may include front matter
+- EPUB front matter filtering is heuristic
 - Graph generation can produce duplicate names
 - Analysis requires strong grounding prompts
 
