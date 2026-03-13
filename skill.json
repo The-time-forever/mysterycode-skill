@@ -1,0 +1,49 @@
+{
+  "name": "mystery-analysis",
+  "version": "1.0.0",
+  "description": "Analyze mystery novels with structured investigation workflows. Supports text import, chapter selection, clue analysis, consistency checking, relation graph generation, and automatic Obsidian vault creation for knowledge management.",
+  "trigger": "Use this skill when users want to analyze mystery novels, detective stories, or narrative text requiring close reading. Triggers include: mentions of 'mystery analysis', 'clue tracking', 'detective story', 'foreshadowing analysis', or requests to analyze narrative text for patterns, anomalies, and consistency.",
+  "capabilities": [
+    "Import and parse mystery text from multiple formats (md, txt, pdf, epub)",
+    "Segment text into chapters with automatic detection",
+    "Perform structured analysis focusing on details, anomalies, foreshadowing, and insights",
+    "Check consistency across chapters and detect contradictions",
+    "Generate character and entity relation graphs",
+    "Create complete Obsidian vault with organized structure",
+    "Export investigation notes with double-links and tags",
+    "Generate character pages and cross-chapter tracking",
+    "Support multi-language content with language preservation",
+    "Evidence-based analysis grounded in selected text"
+  ],
+  "workflow": [
+    "Import source text",
+    "Parse and review chapter structure",
+    "Select investigation scope (chapters)",
+    "Run structured clue analysis",
+    "Check for consistency issues",
+    "Inspect relation graphs",
+    "Create Obsidian vault with organized structure",
+    "Export findings with double-links and tags"
+  ],
+  "outputFormats": [
+    "Structured JSON with details/anomalies/foreshadowing/insights",
+    "Consistency check reports",
+    "Relation graph data",
+    "Obsidian markdown notes with vault structure",
+    "Chapter analysis templates",
+    "Character card templates",
+    "Clue tracking templates"
+  ],
+  "tags": [
+    "mystery",
+    "analysis",
+    "narrative",
+    "detective",
+    "clue-tracking",
+    "close-reading",
+    "foreshadowing",
+    "consistency-checking",
+    "obsidian",
+    "knowledge-management"
+  ]
+}
