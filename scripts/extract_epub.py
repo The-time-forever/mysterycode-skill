@@ -75,6 +75,22 @@ CHAPTER_TITLE_PATTERNS = (
 )
 CHAPTER_MARKER_PATTERN = re.compile(r"^(第[0-9一二三四五六七八九十百千零〇两]+章|chapter\s+\d+|\d+)$", re.IGNORECASE)
 DEFAULT_MIN_TEXT_CHARS = 80
+NOTE_START_PATTERNS = (
+    re.compile(r"^\d{3,4}年"),
+    re.compile(r"^\d{1,2}世纪"),
+    re.compile(r"^在日本"),
+)
+NOTE_PHRASES = (
+    "原指",
+    "之称",
+    "电话",
+    "公害疾病",
+    "受害者",
+    "导致",
+    "是报警电话",
+    "是火警",
+    "被判败诉",
+)
 
 
 @dataclass
@@ -88,6 +104,7 @@ class Chapter:
     front_matter_reason: str | None
     chapter_label: str | None
     chapter_number: str | None
+    notes: list[str]
 
     def to_dict(self, preview_chars: int) -> dict[str, object]:
         preview = self.text[:preview_chars].replace("\n", " ")
@@ -102,6 +119,8 @@ class Chapter:
             "front_matter_reason": self.front_matter_reason,
             "chapter_label": self.chapter_label,
             "chapter_number": self.chapter_number,
+            "notes": self.notes,
+            "note_count": len(self.notes),
             "word_count": len(self.text.split()),
             "char_count": len(self.text),
         }
@@ -280,6 +299,39 @@ def is_generic_numeric_label(value: str | None) -> bool:
     return bool(re.fullmatch(r"\d+", normalize_whitespace(value)))
 
 
+def split_paragraphs(text: str) -> list[str]:
+    return [normalize_whitespace(part) for part in re.split(r"\n\s*\n", text) if normalize_whitespace(part)]
+
+
+def looks_like_note_paragraph(paragraph: str) -> bool:
+    if len(paragraph) < 20:
+        return False
+    if paragraph.startswith("“"):
+        return False
+    if any(pattern.match(paragraph) for pattern in NOTE_START_PATTERNS):
+        return True
+    if any(phrase in paragraph for phrase in NOTE_PHRASES):
+        digit_count = sum(ch.isdigit() for ch in paragraph)
+        if digit_count >= 2 or len(paragraph) <= 180:
+            return True
+    return False
+
+
+def split_trailing_notes(text: str) -> tuple[str, list[str]]:
+    paragraphs = split_paragraphs(text)
+    if len(paragraphs) < 3:
+        return text, []
+    trailing_notes: list[str] = []
+    index = len(paragraphs) - 1
+    while index >= 0 and looks_like_note_paragraph(paragraphs[index]):
+        trailing_notes.insert(0, paragraphs[index])
+        index -= 1
+    if len(trailing_notes) < 2:
+        return text, []
+    narrative = "\n\n".join(paragraphs[: index + 1]).strip()
+    return narrative or text, trailing_notes
+
+
 def extract_chapter(
     epub_zip: zipfile.ZipFile,
     chapter_path: str,
@@ -293,6 +345,7 @@ def extract_chapter(
     text = parser.extracted_text()
     if not text:
         return None
+    text, notes = split_trailing_notes(text)
     title = parser.headings[0] if parser.headings else chapter_title_from_href(chapter_path)
     chapter_label, chapter_number = infer_chapter_metadata(title, text)
     is_front_matter, front_matter_reason = classify_front_matter(title, chapter_path, text, min_text_chars)
@@ -306,6 +359,7 @@ def extract_chapter(
         front_matter_reason=front_matter_reason,
         chapter_label=chapter_label,
         chapter_number=chapter_number,
+        notes=notes,
     )
 
 
