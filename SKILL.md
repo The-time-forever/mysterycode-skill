@@ -1,3 +1,8 @@
+---
+name: mystery-analysis
+description: Analyze mystery novels and detective stories with evidence-based close reading workflows. Use when Claude needs to extract EPUB text, analyze chapters for clues, anomalies, foreshadowing, and insights, check consistency across chapters, or generate Obsidian vault notes for mystery and detective fiction.
+---
+
 # MysteryCode Analysis Skill
 
 A specialized skill for analyzing mystery novels and detective stories using structured investigation workflows. This skill helps readers perform close reading, track clues, identify foreshadowing, and detect inconsistencies in narrative text.
@@ -83,119 +88,10 @@ The tool amplifies close reading rather than replacing it. It should:
 - If extraction fails or produces no readable chapters, stop and report that the source text is unavailable.
 - Do not infer plot content from the file name, title, metadata, or prior knowledge.
 
-## Output Structure
+## Supporting Resources
 
-### Analysis Output
-```
-{
-  "details": [
-    "Concrete observation with context"
-  ],
-  "anomalies": [
-    "Suspicious element with explanation"
-  ],
-  "foreshadowing": [
-    "Potential setup with reasoning"
-  ],
-  "insights": [
-    "Grounded interpretation tied to evidence"
-  ],
-  "summary": "Brief overview of chapter content",
-  "entities": ["Character names", "Key objects", "Locations"],
-  "chapters": ["Chapter references"]
-}
-```
-
-### Consistency Check Output
-- Contradictions between chapters
-- Unresolved tensions
-- Potential callbacks
-- Timeline inconsistencies
-
-### Relation Graph Output
-- Character relationships
-- Entity connections
-- Interaction patterns
-- Network visualization data
-
-## Quality Standards
-
-### What to Include
-- Specific quotes or paraphrases from the text
-- Concrete details (names, times, places, actions)
-- Observable character behaviors
-- Explicit dialogue and reactions
-- Textual evidence for each claim
-
-### What to Avoid
-- Generic plot summaries
-- Speculation without textual support
-- Prior knowledge of the story's ending
-- Broad interpretations without evidence
-- Language switching (maintain source language)
-
-## Use Cases
-
-### For Mystery Readers
-- Track clues across long novels
-- Identify patterns and connections
-- Notice foreshadowing on first read
-- Prepare for book club discussions
-
-### For Writers
-- Analyze mystery structure and pacing
-- Study how published authors plant clues
-- Learn foreshadowing techniques
-- Understand consistency requirements
-
-### For Researchers
-- Perform narrative analysis
-- Study detective fiction conventions
-- Analyze plot construction
-- Compare mystery writing styles
-
-## Technical Notes
-
-### Supported Formats
-- Markdown (.md)
-- Plain text (.txt)
-- PDF (.pdf)
-- EPUB (.epub) via `scripts/extract_epub.py`
-
-### Chapter Segmentation
-- Automatic chapter detection
-- Manual chapter boundary adjustment
-- Preview before analysis
-- Handle front matter and structural content
-
-### Model Requirements
-- Supports multiple LLM providers
-- Works with DeepSeek, Claude, and other models
-- Structured output generation
-- Long-context handling for full chapters
-
-## Limitations and Known Issues
-
-### Current Constraints
-- Chapter truncation may occur for very long chapters
-- EPUB front matter filtering is heuristic and may need manual review
-- Graph generation can produce duplicate node names
-- Analysis may drift without strong grounding prompts
-
-### Future Improvements
-- Chunking strategy for long chapters
-- Better EPUB front matter filtering
-- Stronger evidence-gating in prompts
-- Improved graph stability
-- Multi-chapter summary synthesis
-
-## Integration with Claude Code
-
-This skill can be invoked through Claude Code to:
-- Analyze mystery novels during reading
-- Generate investigation notes
-- Export findings to knowledge bases
-- Support creative writing projects
-- Assist with literary analysis tasks
-
-The skill maintains the command-first interaction model and structured output format that makes MysteryCode effective for systematic investigation workflows.
+- `docs/prompt.md`: prompt rules, EPUB note handling, and Obsidian output expectations
+- `docs/USAGE.md`: user-facing examples and workflow walkthroughs
+- `docs/examples.md`: longer scenario examples
+- `templates/`: chapter, character, and clue-tracking templates
+- `scripts/extract_epub.py`: EPUB extraction script used before narrative analysis

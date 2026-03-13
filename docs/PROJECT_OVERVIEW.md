@@ -5,12 +5,12 @@
 ```
 mysterycode-skill/
 ├── README.md                           # 英文完整说明
-├── README_CN.md                        # 中文完整说明
-├── USAGE.md                            # 详细使用指南
-├── skill.md                            # 技能核心能力描述
+├── docs/README_CN.md                   # 中文完整说明
+├── docs/USAGE.md                       # 详细使用指南
+├── SKILL.md                            # 技能核心能力描述
 ├── skill.json                          # 技能元数据配置
-├── prompt.md                           # 分析提示词和质量标准
-├── examples.md                         # 详细使用示例
+├── docs/prompt.md                      # 分析提示词和质量标准
+├── docs/examples.md                    # 详细使用示例
 ├── scripts/                            # 辅助脚本
 │   └── extract_epub.py                 # EPUB 正文提取脚本
 └── templates/                          # Obsidian 模板文件
@@ -73,31 +73,31 @@ claude list-skills
 
 ##  文档说明
 
-### README.md / README_CN.md
+### README.md / docs/README_CN.md
 - 项目概述和功能介绍
 - 安装和使用说明
 - 技术细节和架构
 - Obsidian vault 结构说明
 
-### USAGE.md
+### docs/USAGE.md
 - 详细的使用指南
 - 完整的工作流程示例
 - 最佳实践和技巧
 - 故障排除
 
-### skill.md
+### SKILL.md
 - 核心能力描述
 - 分析维度说明
 - 设计原则和哲学
 - 质量标准
 
-### prompt.md
+### docs/prompt.md
 - 分析提示词模板
 - 质量标准和规范
 - Obsidian vault 创建指令
 - 边缘情况处理
 
-### examples.md
+### docs/examples.md
 - 详细的使用示例
 - 完整的 vault 创建示例
 - 各种分析场景演示
@@ -213,10 +213,10 @@ mystery-vault-[书名]/
 
 ##  推荐阅读顺序
 
-1. **README_CN.md** - 了解项目概述
-2. **USAGE.md** - 学习如何使用
-3. **examples.md** - 查看实际示例
-4. **prompt.md** - 理解分析原理
+1. **docs/README_CN.md** - 了解项目概述
+2. **docs/USAGE.md** - 学习如何使用
+3. **docs/examples.md** - 查看实际示例
+4. **docs/prompt.md** - 理解分析原理
 5. **templates/** - 查看模板文件
 
 ##  贡献指南
@@ -246,9 +246,9 @@ MIT License
 
 ---
 
-**开始使用**: 阅读 `USAGE.md` 获取详细的使用指南
+**开始使用**: 阅读 `docs/USAGE.md` 获取详细的使用指南
 
-**快速示例**: 查看 `examples.md` 了解实际使用场景
+**快速示例**: 查看 `docs/examples.md` 了解实际使用场景
 
 **技能配置**: 查看 `skill.json` 了解触发条件
 

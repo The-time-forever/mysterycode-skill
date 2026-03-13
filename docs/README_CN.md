@@ -223,10 +223,10 @@ mystery-vault-[书名]/
 ## 文件说明
 
 - `README.md` - 完整使用说明
-- `skill.md` - 核心能力描述
+- `SKILL.md` - 核心能力描述
 - `skill.json` - 元数据配置
-- `prompt.md` - 分析提示词
-- `examples.md` - 使用示例
+- `docs/prompt.md` - 分析提示词
+- `docs/examples.md` - 使用示例
 
 ## 许可证
 
