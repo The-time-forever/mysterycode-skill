@@ -59,6 +59,11 @@ FRONT_MATTER_KEYWORDS = {
     "title",
     "toc",
 }
+CHAPTER_TITLE_PATTERNS = (
+    re.compile(r"^第[0-9一二三四五六七八九十百千零〇两]+章$"),
+    re.compile(r"^chapter\s+\d+$", re.IGNORECASE),
+    re.compile(r"^\d+$"),
+)
 
 
 @dataclass
@@ -187,8 +192,11 @@ def chapter_title_from_href(href: str) -> str:
 
 
 def looks_like_front_matter(title: str, href: str, text: str) -> bool:
+    normalized_title = normalize_whitespace(title)
+    if is_probable_chapter_title(normalized_title, text):
+        return False
     haystacks = {
-        normalize_whitespace(title).lower(),
+        normalized_title.lower(),
         Path(href).stem.lower(),
     }
     if any(keyword in hay for hay in haystacks for keyword in FRONT_MATTER_KEYWORDS):
@@ -198,6 +206,14 @@ def looks_like_front_matter(title: str, href: str, text: str) -> bool:
         short_text = " ".join(words[:20]).lower()
         if any(keyword in short_text for keyword in FRONT_MATTER_KEYWORDS):
             return True
+    return False
+
+
+def is_probable_chapter_title(title: str, text: str) -> bool:
+    if not title:
+        return False
+    if any(pattern.match(title) for pattern in CHAPTER_TITLE_PATTERNS):
+        return len(text.strip()) > 80
     return False
 
 
