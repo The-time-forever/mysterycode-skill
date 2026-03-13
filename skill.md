@@ -49,6 +49,7 @@ The skill performs evidence-based analysis focusing on:
 - Avoid speculation based on prior knowledge of the story
 - Prioritize observations over interpretations
 - Include source evidence for important claims
+- When EPUB extraction provides `notes`, use them only as labeled reference context, not as primary plot evidence
 
 ### Language Preservation
 - Maintain the source language in analysis output
