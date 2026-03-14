@@ -68,6 +68,13 @@ mysterycode-skill/
 python scripts/extract_epub.py my-book.epub --output extracted.json
 ```
 
+Retry-friendly options:
+
+```bash
+python scripts/extract_epub.py my-book.epub --language en --disable-frontmatter-filter
+python scripts/extract_epub.py my-book.epub --include-item chapter --exclude-item cover
+```
+
 ### Ask Claude to analyze and create a vault
 
 ```text
@@ -83,9 +90,11 @@ python scripts/validate_vault.py ./mystery-vault-book
 ## Skill Behavior
 
 - EPUB analysis is intentionally two-step: extract first, analyze second.
+- EPUB extraction now supports `zh` and `en` profiles plus `--language auto`.
 - Extracted `notes` are reference context, not primary plot evidence.
 - Vault output location is user-controlled; ask Claude to place it wherever you want.
 - If EPUB extraction fails, the skill should stop and report the failure instead of guessing from prior knowledge.
+- On extraction failure, use the returned diagnostics with controlled retries such as `--language`, `--include-item`, `--exclude-item`, or `--disable-frontmatter-filter`.
 - Chapter writes should be followed by vault synchronization: update book info, clue tracking, recent-analysis links, and minimal entity pages.
 - Use `scripts/validate_vault.py` to catch empty pages, missing link targets, stale indexes, and broken chapter navigation.
 

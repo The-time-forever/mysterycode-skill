@@ -37,60 +37,158 @@ BLOCK_TAGS = {
     "tr",
 }
 SKIP_TAGS = {"head", "nav", "script", "style", "title"}
-FRONT_MATTER_KEYWORDS = {
-    "about",
-    "acknowledgment",
-    "acknowledgements",
-    "acknowledgment",
-    "appendix",
-    "author",
-    "colophon",
-    "contents",
-    "copyright",
-    "cover",
-    "dedication",
-    "foreword",
-    "frontmatter",
-    "imprint",
-    "index",
-    "license",
-    "notes",
-    "preface",
-    "title",
-    "toc",
-}
-FRONT_MATTER_TEXT_SNIPPETS = {
-    "all rights reserved",
-    "copyright ©",
-    "first published",
-    "isbn:",
-    "出版社",
-    "版权信息",
-    "作 者：",
-}
-CHAPTER_TITLE_PATTERNS = (
-    re.compile(r"^第[0-9一二三四五六七八九十百千零〇两]+章$"),
-    re.compile(r"^chapter\s+\d+$", re.IGNORECASE),
-    re.compile(r"^\d+$"),
-)
-CHAPTER_MARKER_PATTERN = re.compile(r"^(第[0-9一二三四五六七八九十百千零〇两]+章|chapter\s+\d+|\d+)$", re.IGNORECASE)
+CJK_RANGE_RE = re.compile(r"[\u4e00-\u9fff]")
 DEFAULT_MIN_TEXT_CHARS = 80
-NOTE_START_PATTERNS = (
-    re.compile(r"^\d{3,4}年"),
-    re.compile(r"^\d{1,2}世纪"),
-    re.compile(r"^在日本"),
-)
-NOTE_PHRASES = (
-    "原指",
-    "之称",
-    "电话",
-    "公害疾病",
-    "受害者",
-    "导致",
-    "是报警电话",
-    "是火警",
-    "被判败诉",
-)
+DEFAULT_LANGUAGE = "auto"
+SUPPORTED_LANGUAGES = {"auto", "zh", "en"}
+
+LANGUAGE_RULES = {
+    "zh": {
+        "front_matter_keywords": {
+            "about",
+            "acknowledgment",
+            "acknowledgements",
+            "appendix",
+            "author",
+            "colophon",
+            "contents",
+            "copyright",
+            "cover",
+            "dedication",
+            "foreword",
+            "frontmatter",
+            "imprint",
+            "index",
+            "license",
+            "notes",
+            "preface",
+            "title",
+            "toc",
+            "版权",
+            "目录",
+            "前言",
+            "序言",
+            "后记",
+            "附录",
+            "封面",
+        },
+        "front_matter_text_snippets": {
+            "all rights reserved",
+            "copyright ©",
+            "first published",
+            "isbn:",
+            "出版社",
+            "版权信息",
+            "作 者：",
+            "版权所有",
+        },
+        "chapter_title_patterns": (
+            re.compile(r"^第[0-9一二三四五六七八九十百千零〇两]+章$"),
+            re.compile(r"^chapter\s+\d+$", re.IGNORECASE),
+            re.compile(r"^\d+$"),
+        ),
+        "chapter_marker_pattern": re.compile(
+            r"^(第[0-9一二三四五六七八九十百千零〇两]+章|chapter\s+\d+|\d+)$",
+            re.IGNORECASE,
+        ),
+        "note_start_patterns": (
+            re.compile(r"^\d{3,4}年"),
+            re.compile(r"^\d{1,2}世纪"),
+            re.compile(r"^在日本"),
+        ),
+        "note_phrases": (
+            "原指",
+            "之称",
+            "电话",
+            "公害疾病",
+            "受害者",
+            "导致",
+            "是报警电话",
+            "是火警",
+            "被判败诉",
+        ),
+    },
+    "en": {
+        "front_matter_keywords": {
+            "about",
+            "acknowledgment",
+            "acknowledgements",
+            "appendix",
+            "author",
+            "colophon",
+            "contents",
+            "copyright",
+            "cover",
+            "dedication",
+            "epigraph",
+            "foreword",
+            "frontmatter",
+            "glossary",
+            "imprint",
+            "index",
+            "license",
+            "notes",
+            "preface",
+            "prologue",
+            "table of contents",
+            "title",
+            "toc",
+        },
+        "front_matter_text_snippets": {
+            "all rights reserved",
+            "copyright ©",
+            "copyright",
+            "first published",
+            "isbn:",
+            "published by",
+            "no part of this publication",
+            "library of congress",
+        },
+        "chapter_title_patterns": (
+            re.compile(r"^chapter\s+\d+$", re.IGNORECASE),
+            re.compile(r"^chapter\s+(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)$", re.IGNORECASE),
+            re.compile(r"^(prologue|epilogue)$", re.IGNORECASE),
+            re.compile(r"^[ivxlcdm]+$", re.IGNORECASE),
+            re.compile(r"^\d+$"),
+        ),
+        "chapter_marker_pattern": re.compile(
+            r"^(chapter\s+\d+|chapter\s+(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)|prologue|epilogue|[ivxlcdm]+|\d+)$",
+            re.IGNORECASE,
+        ),
+        "note_start_patterns": (
+            re.compile(r"^\d{4}\b"),
+            re.compile(r"^(in|during)\s", re.IGNORECASE),
+            re.compile(r"^(literally|historically|in japan|in china)\b", re.IGNORECASE),
+        ),
+        "note_phrases": (
+            "literally",
+            "refers to",
+            "in japan",
+            "emergency number",
+            "police emergency",
+            "fire emergency",
+            "historically",
+            "the term",
+        ),
+    },
+}
+
+
+@dataclass
+class ExtractionContext:
+    requested_language: str
+    language: str
+    language_source: str
+    disable_front_matter_filter: bool
+    include_items: tuple[str, ...]
+    exclude_items: tuple[str, ...]
+    diagnostics: dict[str, object]
+
+
+class ExtractionFailure(ValueError):
+    def __init__(self, message: str, diagnostics: dict[str, object]) -> None:
+        super().__init__(message)
+        self.diagnostics = diagnostics
 
 
 @dataclass
@@ -124,6 +222,49 @@ class Chapter:
             "word_count": len(self.text.split()),
             "char_count": len(self.text),
         }
+
+
+def detect_language(sample: str) -> str:
+    if not sample.strip():
+        return "en"
+    cjk_count = len(CJK_RANGE_RE.findall(sample))
+    alpha_count = sum(ch.isascii() and ch.isalpha() for ch in sample)
+    if cjk_count >= max(20, alpha_count // 3):
+        return "zh"
+    return "en"
+
+
+def build_context(
+    requested_language: str,
+    disable_front_matter_filter: bool,
+    include_items: list[str] | None,
+    exclude_items: list[str] | None,
+) -> ExtractionContext:
+    if requested_language not in SUPPORTED_LANGUAGES:
+        raise ValueError(f"Unsupported language: {requested_language}")
+    language = "en" if requested_language == "auto" else requested_language
+    language_source = "default"
+    diagnostics: dict[str, object] = {
+        "requested_language": requested_language,
+        "language": language,
+        "language_source": language_source,
+        "disable_front_matter_filter": disable_front_matter_filter,
+        "include_items": include_items or [],
+        "exclude_items": exclude_items or [],
+        "spine_item_count": 0,
+        "html_spine_item_count": 0,
+        "forced_included_items": [],
+        "forced_excluded_items": [],
+    }
+    return ExtractionContext(
+        requested_language=requested_language,
+        language=language,
+        language_source=language_source,
+        disable_front_matter_filter=disable_front_matter_filter,
+        include_items=tuple(include_items or []),
+        exclude_items=tuple(exclude_items or []),
+        diagnostics=diagnostics,
+    )
 
 
 class XHTMLTextExtractor(HTMLParser):
@@ -228,26 +369,34 @@ def chapter_title_from_href(href: str) -> str:
     return normalize_whitespace(stem.title()) or "Untitled Chapter"
 
 
-def classify_front_matter(title: str, href: str, text: str, min_text_chars: int) -> tuple[bool, str | None]:
+def classify_front_matter(
+    title: str,
+    href: str,
+    text: str,
+    min_text_chars: int,
+    rules: dict[str, object],
+) -> tuple[bool, str | None]:
     normalized_title = normalize_whitespace(title)
-    if is_probable_chapter_title(normalized_title, text, min_text_chars):
+    if is_probable_chapter_title(normalized_title, text, min_text_chars, rules):
         return False, None
+    front_matter_keywords = rules["front_matter_keywords"]
+    front_matter_text_snippets = rules["front_matter_text_snippets"]
     haystacks = {
         normalized_title.lower(),
         Path(href).stem.lower(),
     }
     for hay in haystacks:
-        for keyword in FRONT_MATTER_KEYWORDS:
+        for keyword in front_matter_keywords:
             if keyword in hay:
                 return True, f"matched_keyword:{keyword}"
     words = text.split()
     lowered_text = text.lower()
-    for snippet in FRONT_MATTER_TEXT_SNIPPETS:
+    for snippet in front_matter_text_snippets:
         if snippet in lowered_text or snippet in text:
             return True, f"matched_text_snippet:{snippet}"
     if len(words) < 40:
         short_text = " ".join(words[:20]).lower()
-        for keyword in FRONT_MATTER_KEYWORDS:
+        for keyword in front_matter_keywords:
             if keyword in short_text:
                 return True, f"matched_short_text_keyword:{keyword}"
     if len(text.strip()) < min_text_chars:
@@ -255,19 +404,46 @@ def classify_front_matter(title: str, href: str, text: str, min_text_chars: int)
     return False, None
 
 
-def is_probable_chapter_title(title: str, text: str, min_text_chars: int) -> bool:
+def is_probable_chapter_title(title: str, text: str, min_text_chars: int, rules: dict[str, object]) -> bool:
     if not title:
         return False
-    if any(pattern.match(title) for pattern in CHAPTER_TITLE_PATTERNS):
+    patterns: tuple[re.Pattern[str], ...] = rules["chapter_title_patterns"]
+    if any(pattern.match(title) for pattern in patterns):
         return len(text.strip()) >= min_text_chars
     return False
 
 
-def parse_chapter_marker(value: str) -> tuple[str | None, str | None]:
+def english_word_to_number(value: str) -> str | None:
+    mapping = {
+        "one": "1",
+        "two": "2",
+        "three": "3",
+        "four": "4",
+        "five": "5",
+        "six": "6",
+        "seven": "7",
+        "eight": "8",
+        "nine": "9",
+        "ten": "10",
+        "eleven": "11",
+        "twelve": "12",
+        "thirteen": "13",
+        "fourteen": "14",
+        "fifteen": "15",
+        "sixteen": "16",
+        "seventeen": "17",
+        "eighteen": "18",
+        "nineteen": "19",
+        "twenty": "20",
+    }
+    return mapping.get(value.lower())
+
+
+def parse_chapter_marker(value: str, language: str) -> tuple[str | None, str | None]:
     normalized = normalize_whitespace(value)
     if not normalized:
         return None, None
-    if re.fullmatch(r"第([0-9一二三四五六七八九十百千零〇两]+)章", normalized):
+    if language == "zh" and re.fullmatch(r"第([0-9一二三四五六七八九十百千零〇两]+)章", normalized):
         match = re.fullmatch(r"第([0-9一二三四五六七八九十百千零〇两]+)章", normalized)
         assert match is not None
         number = match.group(1)
@@ -277,17 +453,33 @@ def parse_chapter_marker(value: str) -> tuple[str | None, str | None]:
         assert match is not None
         number = match.group(1)
         return f"Chapter {number}", number
+    if re.fullmatch(
+        r"chapter\s+(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)",
+        normalized,
+        flags=re.IGNORECASE,
+    ):
+        match = re.fullmatch(
+            r"chapter\s+(one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty)",
+            normalized,
+            flags=re.IGNORECASE,
+        )
+        assert match is not None
+        word = match.group(1)
+        number = english_word_to_number(word)
+        return f"Chapter {word.title()}", number
+    if re.fullmatch(r"(prologue|epilogue)", normalized, flags=re.IGNORECASE):
+        return normalized.title(), None
     if re.fullmatch(r"\d+", normalized):
         return normalized, normalized
     return None, None
 
 
-def infer_chapter_metadata(title: str, text: str) -> tuple[str | None, str | None]:
-    title_label, title_number = parse_chapter_marker(title)
+def infer_chapter_metadata(title: str, text: str, language: str) -> tuple[str | None, str | None]:
+    title_label, title_number = parse_chapter_marker(title, language)
     if title_label:
         return title_label, title_number
     first_line = normalize_whitespace(text.splitlines()[0] if text.splitlines() else "")
-    text_label, text_number = parse_chapter_marker(first_line)
+    text_label, text_number = parse_chapter_marker(first_line, language)
     if text_label:
         return text_label, text_number
     return None, None
@@ -303,27 +495,29 @@ def split_paragraphs(text: str) -> list[str]:
     return [normalize_whitespace(part) for part in re.split(r"\n\s*\n", text) if normalize_whitespace(part)]
 
 
-def looks_like_note_paragraph(paragraph: str) -> bool:
+def looks_like_note_paragraph(paragraph: str, rules: dict[str, object]) -> bool:
     if len(paragraph) < 20:
         return False
     if paragraph.startswith("“"):
         return False
-    if any(pattern.match(paragraph) for pattern in NOTE_START_PATTERNS):
+    note_start_patterns: tuple[re.Pattern[str], ...] = rules["note_start_patterns"]
+    note_phrases: tuple[str, ...] = rules["note_phrases"]
+    if any(pattern.match(paragraph) for pattern in note_start_patterns):
         return True
-    if any(phrase in paragraph for phrase in NOTE_PHRASES):
+    if any(phrase in paragraph for phrase in note_phrases):
         digit_count = sum(ch.isdigit() for ch in paragraph)
         if digit_count >= 2 or len(paragraph) <= 180:
             return True
     return False
 
 
-def split_trailing_notes(text: str) -> tuple[str, list[str]]:
+def split_trailing_notes(text: str, rules: dict[str, object]) -> tuple[str, list[str]]:
     paragraphs = split_paragraphs(text)
     if len(paragraphs) < 3:
         return text, []
     trailing_notes: list[str] = []
     index = len(paragraphs) - 1
-    while index >= 0 and looks_like_note_paragraph(paragraphs[index]):
+    while index >= 0 and looks_like_note_paragraph(paragraphs[index], rules):
         trailing_notes.insert(0, paragraphs[index])
         index -= 1
     if len(trailing_notes) < 2:
@@ -338,6 +532,7 @@ def extract_chapter(
     order: int,
     item_id: str,
     min_text_chars: int,
+    context: ExtractionContext,
 ) -> Chapter | None:
     raw = epub_zip.read(chapter_path)
     parser = XHTMLTextExtractor()
@@ -345,10 +540,18 @@ def extract_chapter(
     text = parser.extracted_text()
     if not text:
         return None
-    text, notes = split_trailing_notes(text)
+    if context.requested_language == "auto":
+        detected_language = detect_language(text[:2000])
+        if context.language_source == "default":
+            context.language = detected_language
+            context.language_source = "auto-detected-from-text"
+            context.diagnostics["language"] = detected_language
+            context.diagnostics["language_source"] = context.language_source
+    rules = LANGUAGE_RULES[context.language]
+    text, notes = split_trailing_notes(text, rules)
     title = parser.headings[0] if parser.headings else chapter_title_from_href(chapter_path)
-    chapter_label, chapter_number = infer_chapter_metadata(title, text)
-    is_front_matter, front_matter_reason = classify_front_matter(title, chapter_path, text, min_text_chars)
+    chapter_label, chapter_number = infer_chapter_metadata(title, text, context.language)
+    is_front_matter, front_matter_reason = classify_front_matter(title, chapter_path, text, min_text_chars, rules)
     return Chapter(
         order=order,
         item_id=item_id,
@@ -367,27 +570,39 @@ def load_chapters(
     epub_path: Path,
     keep_front_matter: bool,
     min_text_chars: int,
+    context: ExtractionContext,
 ) -> tuple[str | None, list[Chapter], list[dict[str, str]]]:
     with zipfile.ZipFile(epub_path) as epub_zip:
         opf_path = get_opf_path(epub_zip)
         book_title, spine = parse_package(epub_zip, opf_path)
+        context.diagnostics["opf_path"] = opf_path
+        context.diagnostics["spine_item_count"] = len(spine)
         chapters: list[Chapter] = []
         skipped: list[dict[str, str]] = []
         pending_chapter_label: str | None = None
         pending_chapter_number: str | None = None
         for order, (item_id, href) in enumerate(spine, start=1):
             chapter_path = resolve_href(opf_path, href)
+            item_ref = f"{item_id}:{chapter_path}"
+            if context.exclude_items and any(token in item_ref for token in context.exclude_items):
+                context.diagnostics["forced_excluded_items"].append(item_ref)
+                skipped.append({"href": chapter_path, "reason": "excluded_by_user"})
+                continue
             if not chapter_path.lower().endswith((".xhtml", ".html", ".htm")):
                 skipped.append({"href": chapter_path, "reason": "non_html_spine_item"})
                 continue
-            chapter = extract_chapter(epub_zip, chapter_path, order, item_id, min_text_chars)
+            context.diagnostics["html_spine_item_count"] = int(context.diagnostics["html_spine_item_count"]) + 1
+            chapter = extract_chapter(epub_zip, chapter_path, order, item_id, min_text_chars, context)
             if chapter is None:
                 skipped.append({"href": chapter_path, "reason": "empty_text_after_parsing"})
                 continue
+            forced_include = bool(context.include_items) and any(token in item_ref for token in context.include_items)
+            if forced_include:
+                context.diagnostics["forced_included_items"].append(item_ref)
             if chapter.is_front_matter and chapter.chapter_label and len(chapter.text.strip()) <= 20:
                 pending_chapter_label = chapter.chapter_label
                 pending_chapter_number = chapter.chapter_number
-            if chapter.is_front_matter and not keep_front_matter:
+            if chapter.is_front_matter and not keep_front_matter and not context.disable_front_matter_filter and not forced_include:
                 skipped.append(
                     {
                         "href": chapter_path,
@@ -398,7 +613,8 @@ def load_chapters(
             if pending_chapter_label and (not chapter.chapter_label or is_generic_numeric_label(chapter.chapter_label)):
                 chapter.chapter_label = pending_chapter_label
                 chapter.chapter_number = pending_chapter_number
-                if CHAPTER_MARKER_PATTERN.match(chapter.title):
+                chapter_marker_pattern: re.Pattern[str] = LANGUAGE_RULES[context.language]["chapter_marker_pattern"]
+                if chapter_marker_pattern.match(chapter.title):
                     chapter.title = pending_chapter_label
             pending_chapter_label = None
             pending_chapter_number = None
@@ -406,12 +622,13 @@ def load_chapters(
         return book_title, chapters, skipped
 
 
-def validate_chapters(chapters: Iterable[Chapter]) -> None:
+def validate_chapters(chapters: Iterable[Chapter], diagnostics: dict[str, object]) -> None:
     chapter_list = list(chapters)
     if not chapter_list:
-        raise ValueError(
+        raise ExtractionFailure(
             "No readable chapter text was extracted from the EPUB. "
-            "Do not analyze the book from prior knowledge."
+            "Do not analyze the book from prior knowledge.",
+            diagnostics,
         )
 
 
@@ -422,6 +639,7 @@ def build_result(
     skipped: list[dict[str, str]],
     preview_chars: int,
     min_text_chars: int,
+    context: ExtractionContext,
 ) -> dict[str, object]:
     detected_title = book_title or epub_path.stem
     chapter_titles = [chapter.chapter_label or chapter.title for chapter in chapters]
@@ -431,6 +649,9 @@ def build_result(
         "chapter_count": len(chapters),
         "chapter_titles": chapter_titles,
         "min_text_chars": min_text_chars,
+        "language": context.language,
+        "language_source": context.language_source,
+        "diagnostics": context.diagnostics,
         "skipped_items": skipped,
         "chapters": [chapter.to_dict(preview_chars=preview_chars) for chapter in chapters],
     }
@@ -440,6 +661,12 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Extract chapter text from an EPUB file.")
     parser.add_argument("epub_path", type=Path, help="Path to the .epub file")
     parser.add_argument("--output", type=Path, help="Write JSON output to a file instead of stdout")
+    parser.add_argument(
+        "--language",
+        choices=sorted(SUPPORTED_LANGUAGES),
+        default=DEFAULT_LANGUAGE,
+        help="Extraction language profile. Use auto to detect zh/en from chapter text.",
+    )
     parser.add_argument(
         "--preview-chars",
         type=int,
@@ -457,6 +684,23 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
         default=DEFAULT_MIN_TEXT_CHARS,
         help="Minimum text length to treat short pages as likely body text",
     )
+    parser.add_argument(
+        "--disable-frontmatter-filter",
+        action="store_true",
+        help="Keep items that would normally be filtered as cover/toc/preface-like sections",
+    )
+    parser.add_argument(
+        "--include-item",
+        action="append",
+        default=[],
+        help="Force-keep a spine item if this token appears in its item id or href; repeatable",
+    )
+    parser.add_argument(
+        "--exclude-item",
+        action="append",
+        default=[],
+        help="Force-skip a spine item if this token appears in its item id or href; repeatable",
+    )
     return parser.parse_args(argv)
 
 
@@ -465,13 +709,26 @@ def main(argv: list[str]) -> int:
     if not args.epub_path.exists():
         print(f"EPUB file not found: {args.epub_path}", file=sys.stderr)
         return 1
+    context = build_context(
+        requested_language=args.language,
+        disable_front_matter_filter=args.disable_frontmatter_filter,
+        include_items=args.include_item,
+        exclude_items=args.exclude_item,
+    )
     try:
         book_title, chapters, skipped = load_chapters(
             args.epub_path,
-            args.keep_front_matter,
+            args.keep_front_matter or args.disable_frontmatter_filter,
             args.min_text_chars,
+            context,
         )
-        validate_chapters(chapters)
+        validate_chapters(chapters, context.diagnostics)
+    except ExtractionFailure as exc:  # pragma: no cover - CLI surface
+        payload = json.dumps({"error": str(exc), "diagnostics": exc.diagnostics}, ensure_ascii=False, indent=2)
+        if args.output:
+            args.output.write_text(payload, encoding="utf-8")
+        print(payload, file=sys.stderr)
+        return 1
     except Exception as exc:  # pragma: no cover - CLI surface
         print(str(exc), file=sys.stderr)
         return 1
@@ -483,6 +740,7 @@ def main(argv: list[str]) -> int:
         skipped,
         args.preview_chars,
         args.min_text_chars,
+        context,
     )
     payload = json.dumps(result, ensure_ascii=False, indent=2)
     if args.output:

@@ -36,7 +36,7 @@ Follow this sequence:
 
 When the source is an `.epub` file:
 
-1. Run `python scripts/extract_epub.py <book>.epub --output extracted.json`
+1. Run `python scripts/extract_epub.py <book>.epub --language auto --output extracted.json`
 2. Inspect the returned chapter count, titles, and previews
 3. Confirm that readable chapter text was extracted
 4. Use `text` as the primary narrative source and `notes` only as labeled reference context
@@ -44,6 +44,7 @@ When the source is an `.epub` file:
 
 Never pretend that the raw `.epub` binary was directly read by the model.
 If extraction fails, stop and report the failure instead of analyzing from memory.
+If extraction fails, read the diagnostics and retry only through explicit controls such as `--language`, `--disable-frontmatter-filter`, `--include-item`, and `--exclude-item`.
 
 ## Analysis Structure
 
@@ -146,6 +147,7 @@ If the selected text is only a title, header, or structural fragment:
 If the source is an EPUB and extraction produced no readable chapter text:
 - State explicitly that the EPUB was not successfully extracted
 - Report any available extraction metadata (for example: zero chapters, only front matter, parse failure)
+- If diagnostics are available, propose a controlled retry using `--language zh|en`, `--disable-frontmatter-filter`, `--include-item`, or `--exclude-item`
 - Do NOT answer from the book title, author, popularity, or prior knowledge
 - Ask for a different source format or a repaired EPUB if the user still wants analysis
 

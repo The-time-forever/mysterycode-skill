@@ -87,8 +87,20 @@ The tool amplifies close reading rather than replacing it. It should:
 
 - Never claim to have read an EPUB directly unless chapter text has been extracted first.
 - For `.epub` inputs, use `scripts/extract_epub.py` and inspect the extracted chapter previews before analysis.
+- Prefer `--language auto` by default; use `--language zh` or `--language en` when the book language is already known.
 - If extraction fails or produces no readable chapters, stop and report that the source text is unavailable.
 - Do not infer plot content from the file name, title, metadata, or prior knowledge.
+
+## Controlled EPUB Retry Strategy
+
+If EPUB extraction fails or produces obviously bad chapter structure:
+- Read the extraction diagnostics first instead of guessing
+- Retry with `--language zh` or `--language en` if auto-detection chose poorly
+- Retry with `--disable-frontmatter-filter` when chapter-title pages or short body pages are being removed
+- Retry with `--include-item <token>` to force-keep a suspiciously skipped spine item
+- Retry with `--exclude-item <token>` to drop obvious cover/toc noise
+
+Treat this as a constrained retry loop. The agent may adjust only these explicit controls unless there is a clear reason to patch the script itself.
 
 ## Vault Maintenance Requirements
 

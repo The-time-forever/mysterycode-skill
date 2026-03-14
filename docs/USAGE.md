@@ -34,6 +34,25 @@ python scripts/extract_epub.py <文件>.epub --output extracted.json
 
 然后基于 `extracted.json` 中的章节文本做分析。不要在没有提取出正文时直接分析书名或文件本身。
 
+中英场景推荐:
+
+```bash
+python scripts/extract_epub.py <文件>.epub --language auto --output extracted.json
+```
+
+如果提取失败或结构明显不对,按受控方式重试:
+
+```bash
+python scripts/extract_epub.py <文件>.epub --language en --disable-frontmatter-filter --output extracted.json
+python scripts/extract_epub.py <文件>.epub --include-item chapter --exclude-item cover --output extracted.json
+```
+
+这些参数的作用是:
+- `--language auto|zh|en`：选择语言规则
+- `--disable-frontmatter-filter`：先别过滤前言/目录/短页,适合误杀正文时使用
+- `--include-item`：强制保留某个 spine 项
+- `--exclude-item`：强制排除明显噪音页
+
 ### 分析单个章节
 
 ```
