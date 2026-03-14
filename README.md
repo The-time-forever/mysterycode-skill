@@ -70,12 +70,20 @@ python scripts/extract_epub.py my-book.epub --output extracted.json
 Analyze chapter 1 of this mystery novel using extracted.json and create an Obsidian vault in ./mystery-vault-book
 ```
 
+### Validate a vault after chapter updates
+
+```bash
+python scripts/validate_vault.py ./mystery-vault-book
+```
+
 ## Skill Behavior
 
 - EPUB analysis is intentionally two-step: extract first, analyze second.
 - Extracted `notes` are reference context, not primary plot evidence.
 - Vault output location is user-controlled; ask Claude to place it wherever you want.
 - If EPUB extraction fails, the skill should stop and report the failure instead of guessing from prior knowledge.
+- Chapter writes should be followed by vault synchronization: update book info, clue tracking, recent-analysis links, and minimal entity pages.
+- Use `scripts/validate_vault.py` to catch empty pages, missing link targets, stale indexes, and broken chapter navigation.
 
 ## More Docs
 

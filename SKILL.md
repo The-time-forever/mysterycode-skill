@@ -76,9 +76,11 @@ The tool amplifies close reading rather than replacing it. It should:
 3. Review extracted chapter structure and previews
 4. Select investigation scope (single chapter or range)
 5. Run structured analysis on extracted text only
-6. Check for consistency issues
-7. Inspect relation graphs
-8. Export findings to notes
+6. Write or update chapter notes in the vault
+7. Synchronize vault indexes, clue pages, and entity cards
+8. Check for consistency issues
+9. Inspect relation graphs
+10. Validate the vault with `python scripts/validate_vault.py <vault-path>`
 ```
 
 ## EPUB Workflow Guardrail
@@ -88,6 +90,19 @@ The tool amplifies close reading rather than replacing it. It should:
 - If extraction fails or produces no readable chapters, stop and report that the source text is unavailable.
 - Do not infer plot content from the file name, title, metadata, or prior knowledge.
 
+## Vault Maintenance Requirements
+
+When adding or updating a chapter inside an Obsidian vault, treat note creation as a multi-file update rather than a single-file write.
+
+Required follow-up updates after each analyzed chapter:
+- Update `Books/[书名]/00-书籍信息.md` to list the new chapter and newly important characters or clues
+- Update `Analysis/线索追踪.md` with new confirmed clues and pending questions from the chapter
+- Update `Home.md` so the latest analysis link points at the newest chapter
+- Create a minimal page for every new linked character, object, location, or clue, or remove the link if the page should not exist yet
+- If a previously partial identity becomes explicit, rename the main character page title to the resolved identity and keep an alias or redirect page for the older label
+- Verify chapter `Previous` and `Next` links after writing
+- Run `python scripts/validate_vault.py <vault-path>` and fix any findings before considering the vault update complete
+
 ## Supporting Resources
 
 - `docs/prompt.md`: prompt rules, EPUB note handling, and Obsidian output expectations
@@ -95,3 +110,4 @@ The tool amplifies close reading rather than replacing it. It should:
 - `docs/examples.md`: longer scenario examples
 - `templates/`: chapter, character, and clue-tracking templates
 - `scripts/extract_epub.py`: EPUB extraction script used before narrative analysis
+- `scripts/validate_vault.py`: post-write validator for empty pages, missing links, stale indexes, and alias drift

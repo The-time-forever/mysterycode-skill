@@ -1,7 +1,7 @@
 {
   "name": "mystery-analysis",
-  "version": "1.1.0",
-  "description": "Analyze mystery novels with structured investigation workflows. Supports text import, EPUB extraction via scripts/extract_epub.py, chapter selection, clue analysis, consistency checking, relation graph generation, and automatic Obsidian vault creation for knowledge management.",
+  "version": "1.2.0",
+  "description": "Analyze mystery novels with structured investigation workflows. Supports text import, EPUB extraction via scripts/extract_epub.py, chapter selection, clue analysis, consistency checking, relation graph generation, and Obsidian vault creation plus post-write validation via scripts/validate_vault.py.",
   "trigger": "Use this skill when users want to analyze mystery novels, detective stories, or narrative text requiring close reading. Triggers include: mentions of 'mystery analysis', 'clue tracking', 'detective story', 'foreshadowing analysis', or requests to analyze narrative text for patterns, anomalies, and consistency.",
   "capabilities": [
     "Import and parse mystery text from multiple formats (md, txt, pdf, epub)",
@@ -11,6 +11,7 @@
     "Check consistency across chapters and detect contradictions",
     "Generate character and entity relation graphs",
     "Create complete Obsidian vault with organized structure",
+    "Validate vault consistency after chapter updates with scripts/validate_vault.py",
     "Export investigation notes with double-links and tags",
     "Generate character pages and cross-chapter tracking",
     "Support multi-language content with language preservation",
@@ -25,6 +26,8 @@
     "Check for consistency issues",
     "Inspect relation graphs",
     "Create Obsidian vault with organized structure",
+    "Synchronize clue pages, indexes, and entity cards after each chapter write",
+    "Validate the vault and fix missing links, empty pages, and stale navigation",
     "Export findings with double-links and tags"
   ],
   "outputFormats": [

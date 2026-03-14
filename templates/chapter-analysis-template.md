@@ -45,6 +45,15 @@
 - Next: [[下一章分析]]
 - Related: [[相关章节]]
 
+## Vault 同步检查
+- [ ] 已更新 [[00-书籍信息]]
+- [ ] 已更新 [[Analysis/线索追踪]]
+- [ ] 已更新 [[Home]]
+- [ ] 新增双链均已有对应页面，或已取消不必要的双链
+- [ ] 如人物身份有新揭示，已更新主人物卡并保留别名入口
+- [ ] 已检查 Previous / Next 导航
+- [ ] 已运行 `python scripts/validate_vault.py <vault-path>`
+
 ## 实体提及
 **Characters:**
 - [[Characters/角色A|角色A]] - 角色在本章的作用

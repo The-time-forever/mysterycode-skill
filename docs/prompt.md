@@ -257,6 +257,18 @@ Use the Write tool to create the following directory structure:
 └── Home.md
 ```
 
+### 2.5. Treat Vault Writes as a Synchronized Update
+When adding a new chapter analysis to an existing vault, you must update more than the chapter file itself.
+
+Mandatory follow-up actions:
+- Update `Books/[书名]/00-书籍信息.md` so the chapter list includes the new analysis
+- Update `Analysis/线索追踪.md` with newly confirmed clues and newly pending clue questions
+- Update `Home.md` so the "Recent Analysis" link points to the newest chapter
+- Create minimal pages for newly linked characters, objects, locations, and clue concepts, or remove the links
+- If a partial identity becomes explicit later, update the main page title to the resolved identity and keep an alias redirect page for the older label
+- Check `Previous` / `Next` navigation in the chapter note
+- After writing, run `python scripts/validate_vault.py <vault-path>` and resolve the reported issues
+
 ### 3. Generate Home Page
 Create `Home.md` as the vault index:
 
@@ -345,6 +357,21 @@ For each analyzed chapter, create `[章节号]-[章节名]分析.md`:
 Tags: #chapter #analysis #[书名]
 Created: [日期]
 ```
+
+### 5.5. Validate the Vault
+After writing or updating notes, run:
+
+```bash
+python scripts/validate_vault.py <vault-path>
+```
+
+This validator checks:
+- Empty markdown pages
+- Missing wikilink targets
+- Chapters that were not added to `00-书籍信息.md`
+- `Home.md` not pointing to the latest chapter
+- Broken chapter `Previous` / `Next` navigation
+- Character pages whose title changed without leaving an alias note
 
 ### 6. Create Character Pages
 For each character mentioned, create `Characters/[角色名].md`:
