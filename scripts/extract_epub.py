@@ -202,6 +202,7 @@ class Chapter:
     front_matter_reason: str | None
     chapter_label: str | None
     chapter_number: str | None
+    section_number: str | None
     notes: list[str]
 
     def to_dict(self, preview_chars: int) -> dict[str, object]:
@@ -217,6 +218,7 @@ class Chapter:
             "front_matter_reason": self.front_matter_reason,
             "chapter_label": self.chapter_label,
             "chapter_number": self.chapter_number,
+            "section_number": self.section_number,
             "notes": self.notes,
             "note_count": len(self.notes),
             "word_count": len(self.text.split()),
@@ -491,6 +493,12 @@ def is_generic_numeric_label(value: str | None) -> bool:
     return bool(re.fullmatch(r"\d+", normalize_whitespace(value)))
 
 
+def combine_major_and_section_title(major_label: str, section_number: str | None) -> str:
+    if not section_number or section_number == "1":
+        return major_label
+    return f"{major_label} / {section_number}"
+
+
 def split_paragraphs(text: str) -> list[str]:
     return [normalize_whitespace(part) for part in re.split(r"\n\s*\n", text) if normalize_whitespace(part)]
 
@@ -552,6 +560,7 @@ def extract_chapter(
     title = parser.headings[0] if parser.headings else chapter_title_from_href(chapter_path)
     chapter_label, chapter_number = infer_chapter_metadata(title, text, context.language)
     is_front_matter, front_matter_reason = classify_front_matter(title, chapter_path, text, min_text_chars, rules)
+    section_number = chapter_number if is_generic_numeric_label(chapter_label) else None
     return Chapter(
         order=order,
         item_id=item_id,
@@ -562,6 +571,7 @@ def extract_chapter(
         front_matter_reason=front_matter_reason,
         chapter_label=chapter_label,
         chapter_number=chapter_number,
+        section_number=section_number,
         notes=notes,
     )
 
@@ -581,6 +591,8 @@ def load_chapters(
         skipped: list[dict[str, str]] = []
         pending_chapter_label: str | None = None
         pending_chapter_number: str | None = None
+        current_major_chapter_label: str | None = None
+        current_major_chapter_number: str | None = None
         for order, (item_id, href) in enumerate(spine, start=1):
             chapter_path = resolve_href(opf_path, href)
             item_ref = f"{item_id}:{chapter_path}"
@@ -602,6 +614,8 @@ def load_chapters(
             if chapter.is_front_matter and chapter.chapter_label and len(chapter.text.strip()) <= 20:
                 pending_chapter_label = chapter.chapter_label
                 pending_chapter_number = chapter.chapter_number
+                current_major_chapter_label = chapter.chapter_label
+                current_major_chapter_number = chapter.chapter_number
             if chapter.is_front_matter and not keep_front_matter and not context.disable_front_matter_filter and not forced_include:
                 skipped.append(
                     {
@@ -615,7 +629,20 @@ def load_chapters(
                 chapter.chapter_number = pending_chapter_number
                 chapter_marker_pattern: re.Pattern[str] = LANGUAGE_RULES[context.language]["chapter_marker_pattern"]
                 if chapter_marker_pattern.match(chapter.title):
-                    chapter.title = pending_chapter_label
+                    chapter.title = combine_major_and_section_title(
+                        pending_chapter_label,
+                        chapter.section_number,
+                    )
+            elif current_major_chapter_label and is_generic_numeric_label(chapter.chapter_label):
+                chapter.title = combine_major_and_section_title(
+                    current_major_chapter_label,
+                    chapter.chapter_number,
+                )
+                chapter.chapter_label = current_major_chapter_label
+                chapter.chapter_number = current_major_chapter_number
+            elif chapter.chapter_label and not is_generic_numeric_label(chapter.chapter_label):
+                current_major_chapter_label = chapter.chapter_label
+                current_major_chapter_number = chapter.chapter_number
             pending_chapter_label = None
             pending_chapter_number = None
             chapters.append(chapter)
