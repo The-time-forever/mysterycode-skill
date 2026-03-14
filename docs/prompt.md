@@ -253,6 +253,9 @@ Use the Write tool to create the following directory structure:
 │       └── [章节分析文件]
 ├── Analysis/
 ├── Characters/
+├── Locations/
+├── Objects/
+├── Timeline/
 ├── Templates/
 └── Home.md
 ```
@@ -265,6 +268,7 @@ Mandatory follow-up actions:
 - Update `Analysis/线索追踪.md` with newly confirmed clues and newly pending clue questions
 - Update `Home.md` so the "Recent Analysis" link points to the newest chapter
 - Create minimal pages for newly linked characters, objects, locations, and clue concepts, or remove the links
+- Prefer dedicated folders for linked entities: `Characters/`, `Locations/`, `Objects/`, and `Timeline/`
 - If a partial identity becomes explicit later, update the main page title to the resolved identity and keep an alias redirect page for the older label
 - Check `Previous` / `Next` navigation in the chapter note
 - After writing, run `python scripts/validate_vault.py <vault-path>` and resolve the reported issues
@@ -284,6 +288,7 @@ Create `Home.md` as the vault index:
 ## 📊 Quick Links
 - [[Templates/章节分析模板]]
 - [[Analysis/线索追踪]]
+- [[Timeline/主时间线]]
 
 ---
 Created: [日期]
@@ -307,6 +312,14 @@ For each book, create `00-书籍信息.md`:
 ## 主要角色
 - [[Characters/角色A]]
 - [[Characters/角色B]]
+
+## 重要地点
+- [[Locations/地点A]]
+- [[Locations/地点B]]
+
+## 关键物品
+- [[Objects/物品A]]
+- [[Objects/物品B]]
 
 ## 关键线索
 - [ ] 线索1
@@ -403,14 +416,24 @@ For each character mentioned, create `Characters/[角色名].md`:
 Tags: #character #[书名]
 ```
 
-### 7. Create Analysis Summary Files
+### 7. Create Location, Object, and Timeline Pages
+For non-character entities, avoid dropping pages into the vault root by default.
+
+Create:
+- `Locations/[地点名].md` for recurring or meaningful places
+- `Objects/[物品名].md` for clues, gifts, tools, and evidence
+- `Timeline/主时间线.md` or chapter-specific timeline notes when time/order matters
+
+Use concise pages when information is still limited; expand them as chapters accumulate.
+
+### 8. Create Analysis Summary Files
 Create `Analysis/线索追踪.md` for cross-chapter tracking:
 
 ```markdown
 # 线索追踪
 
 ## 🔴 重要线索
-- [[物品A]] - 出现于 [[章节1]], [[章节3]]
+- [[Objects/物品A|物品A]] - 出现于 [[章节1]], [[章节3]]
 - [[事件B]] - 提及于 [[章节2]], [[章节5]]
 
 ## 🟡 待确认线索
@@ -424,14 +447,17 @@ Create `Analysis/线索追踪.md` for cross-chapter tracking:
 Tags: #clues #tracking
 ```
 
-### 8. File Naming Conventions
+### 9. File Naming Conventions
 - Use UTF-8 encoding for all files
 - Chapter files: `01-章节名分析.md`, `02-章节名分析.md`
 - Character files: `角色名.md` (no special characters)
+- Location files: `Locations/地点名.md`
+- Object files: `Objects/物品名.md`
+- Timeline files: `Timeline/主时间线.md` or `[范围]-时间线.md`
 - Use `[[]]` for all internal links
 - Use `#tag` for categorization
 
-### 9. Confirm Vault Creation
+### 10. Confirm Vault Creation
 After creating the vault, inform the user:
 - Vault location
 - Number of files created

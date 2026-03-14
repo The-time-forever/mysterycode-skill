@@ -99,6 +99,7 @@ Required follow-up updates after each analyzed chapter:
 - Update `Analysis/线索追踪.md` with new confirmed clues and pending questions from the chapter
 - Update `Home.md` so the latest analysis link points at the newest chapter
 - Create a minimal page for every new linked character, object, location, or clue, or remove the link if the page should not exist yet
+- Put new entity pages in dedicated folders: `Characters/`, `Locations/`, `Objects/`, and `Timeline/` instead of leaving them in the vault root
 - If a previously partial identity becomes explicit, rename the main character page title to the resolved identity and keep an alias or redirect page for the older label
 - Verify chapter `Previous` and `Next` links after writing
 - Run `python scripts/validate_vault.py <vault-path>` and fix any findings before considering the vault update complete
@@ -108,6 +109,6 @@ Required follow-up updates after each analyzed chapter:
 - `docs/prompt.md`: prompt rules, EPUB note handling, and Obsidian output expectations
 - `docs/USAGE.md`: user-facing examples and workflow walkthroughs
 - `docs/examples.md`: longer scenario examples
-- `templates/`: chapter, character, and clue-tracking templates
+- `templates/`: chapter, character, location, object, timeline, and clue-tracking templates
 - `scripts/extract_epub.py`: EPUB extraction script used before narrative analysis
 - `scripts/validate_vault.py`: post-write validator for empty pages, missing links, stale indexes, and alias drift

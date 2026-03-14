@@ -13,7 +13,7 @@
     "Create complete Obsidian vault with organized structure",
     "Validate vault consistency after chapter updates with scripts/validate_vault.py",
     "Export investigation notes with double-links and tags",
-    "Generate character pages and cross-chapter tracking",
+    "Generate character, location, object, and timeline pages with cross-chapter tracking",
     "Support multi-language content with language preservation",
     "Evidence-based analysis grounded in selected text"
   ],

@@ -38,6 +38,9 @@ mysterycode-skill/
 ├── templates/
 │   ├── chapter-analysis-template.md
 │   ├── character-card-template.md
+│   ├── location-card-template.md
+│   ├── object-card-template.md
+│   ├── timeline-note-template.md
 │   └── clue-tracking-template.md
 └── docs/
     ├── README_CN.md
@@ -55,6 +58,7 @@ mysterycode-skill/
 - Check consistency across chapters and timelines
 - Generate character and entity relationship notes
 - Create Obsidian-compatible vault content with double-links and tags
+- Organize vault entities into dedicated folders for characters, locations, objects, and timeline notes
 
 ## Quick Start
 

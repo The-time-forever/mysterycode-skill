@@ -210,6 +210,20 @@ def validate_alias_redirects(root: Path, findings: list[Finding]) -> None:
             )
 
 
+def validate_root_clutter(root: Path, findings: list[Finding]) -> None:
+    allowed = {"Home.md"}
+    for path in sorted(root.glob("*.md")):
+        if path.name in allowed:
+            continue
+        findings.append(
+            Finding(
+                "WARN",
+                "markdown page is in vault root; prefer Characters/, Locations/, Objects/, Analysis/, Timeline/, or Books/",
+                path,
+            )
+        )
+
+
 def main() -> int:
     args = parse_args()
     root = Path(args.vault).resolve()
@@ -227,6 +241,7 @@ def main() -> int:
     validate_home_recent(root, findings)
     validate_chapter_navigation(root, findings)
     validate_alias_redirects(root, findings)
+    validate_root_clutter(root, findings)
 
     if findings:
         for finding in findings:
