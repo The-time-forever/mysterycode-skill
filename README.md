@@ -1,17 +1,17 @@
 # Mystery Analysis Skill for Claude Code
 
-Evidence-based mystery and detective fiction analysis for Claude Code. This repository packages a reusable skill, an EPUB extraction script, and Obsidian-oriented templates so users can go from raw book files to structured reading notes.
+Evidence-based mystery and detective fiction analysis for Claude Code. This repository packages a reusable skill, EPUB extraction helpers, and Obsidian-oriented templates so a user can ask the agent to read a book, analyze chapters, and build an Obsidian vault.
 
 ## Install
 
-### Option 1: Clone and install locally
+Clone this repository and add it as a local plugin:
 
 ```bash
-git clone https://github.com/<your-account>/mysterycode-skill.git
+git clone https://github.com/The-time-forever/mysterycode-skill.git
 /plugin add /path/to/mysterycode-skill
 ```
 
-### Option 2: Copy into the skills directory
+If you prefer, you can also copy the folder into the Claude skills directory:
 
 ```bash
 cp -r mysterycode-skill ~/.claude/skills/
@@ -53,43 +53,30 @@ mysterycode-skill/
 
 ## What It Does
 
-- Extract readable chapter text from EPUB files before analysis
+- Read mystery novels from extracted EPUB text and other text formats
 - Analyze chapters for details, anomalies, foreshadowing, and insights
 - Check consistency across chapters and timelines
 - Generate character and entity relationship notes
-- Create Obsidian-compatible vault content with double-links and tags
+- Create Obsidian-compatible vault content with double-links, tags, and structured folders
 - Organize vault entities into dedicated folders for characters, locations, objects, and timeline notes
 
 ## Quick Start
 
-### Extract an EPUB
+You do not need to run the Python scripts manually in normal use. The agent should call them when needed.
 
-```bash
-python scripts/extract_epub.py my-book.epub --output extracted.json
-```
-
-Retry-friendly options:
-
-```bash
-python scripts/extract_epub.py my-book.epub --language en --disable-frontmatter-filter
-python scripts/extract_epub.py my-book.epub --include-item chapter --exclude-item cover
-```
-
-### Ask Claude to analyze and create a vault
+Typical prompts:
 
 ```text
-Analyze chapter 1 of this mystery novel using extracted.json and create an Obsidian vault in ./mystery-vault-book
-```
+Read this EPUB, analyze chapter 1, and create an Obsidian vault in ./mystery-vault-book
 
-### Validate a vault after chapter updates
+Continue analyzing chapter 2 and update the existing Obsidian vault
 
-```bash
-python scripts/validate_vault.py ./mystery-vault-book
+Check this mystery vault for missing links, empty pages, and stale indexes
 ```
 
 ## Skill Behavior
 
-- EPUB analysis is intentionally two-step: extract first, analyze second.
+- EPUB analysis is intentionally two-step: the agent extracts first, then analyzes.
 - EPUB extraction now supports `zh` and `en` profiles plus `--language auto`.
 - Extracted `notes` are reference context, not primary plot evidence.
 - Vault output location is user-controlled; ask Claude to place it wherever you want.
@@ -97,6 +84,17 @@ python scripts/validate_vault.py ./mystery-vault-book
 - On extraction failure, use the returned diagnostics with controlled retries such as `--language`, `--include-item`, `--exclude-item`, or `--disable-frontmatter-filter`.
 - Chapter writes should be followed by vault synchronization: update book info, clue tracking, recent-analysis links, and minimal entity pages.
 - Use `scripts/validate_vault.py` to catch empty pages, missing link targets, stale indexes, and broken chapter navigation.
+
+## Obsidian Output
+
+This skill is designed to produce and maintain an Obsidian vault, not just one-off chapter summaries.
+
+Typical vault output includes:
+- `Books/[书名]/` chapter analysis notes
+- `Analysis/` cross-chapter clue tracking
+- `Characters/`, `Locations/`, and `Objects/` entity pages
+- `Timeline/` time-order notes
+- `Home.md` as the vault entry page
 
 ## More Docs
 
